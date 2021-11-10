@@ -7,15 +7,33 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jingom.rssreader.R
 import com.jingom.rssreader.model.Article
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
+interface ArticleLoader {
+	suspend fun loadMore()
+}
 
 class ArticleAdapter : RecyclerView.Adapter<ArticleAdapter.ViewHolder>() {
+
 	private val articles: MutableList<Article> = mutableListOf()
+	private var loading = false
 
 	fun add(articles: List<Article>) {
 		val originalSize = articles.size
 		this.articles.addAll(articles)
 
 		notifyItemRangeInserted(originalSize, articles.size)
+	}
+
+	fun add(article: Article) {
+		this.articles.add(article)
+		notifyItemInserted(this.articles.size - 1)
+	}
+
+	fun clear() {
+		this.articles.clear()
+		notifyDataSetChanged()
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
